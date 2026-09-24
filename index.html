@@ -1,0 +1,1176 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emberline — Small-Batch Coffee Roasters</title>
+<meta name="description" content="Small-batch coffee roasters sourcing directly from 23 single origins. Roasted with patience, shipped fresh within 48 hours.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS & RESET ============ */
+:root{
+  --cream:#F6F0E4; --foam:#FBF7EE; --sand:#EDE3CE; --sand2:#E2D3B4;
+  --espresso:#221610; --bark:#3A2818; --mocha:#6B4A2F; --ink:#2A1B10;
+  --caramel:#C4743B; --amber:#E0A458;
+  --muted:#7A6A58; --line:#DFD2B8;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;overflow-x:hidden}
+body.locked{overflow:hidden}
+svg{display:block}
+a{text-decoration:none;color:inherit}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+::selection{background:var(--amber);color:#241207}
+:focus-visible{outline:2px solid var(--caramel);outline-offset:3px;border-radius:6px}
+h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif;font-weight:600;line-height:1.08;letter-spacing:-.02em}
+.container{width:min(1200px,100% - 40px);margin-inline:auto}
+section{padding:96px 0}
+.ic{width:20px;height:20px}
+.hide{display:none!important}
+.grain{position:fixed;inset:0;z-index:80;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>")}
+
+/* ============ SHARED BITS ============ */
+.eyebrow{display:inline-flex;align-items:center;gap:.6rem;font-size:.74rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--caramel)}
+.eyebrow::before{content:"";width:28px;height:2px;background:var(--caramel)}
+.sec-h{font-size:clamp(2.1rem,4vw,3.2rem);margin-top:.9rem}
+.sec-h em{font-style:italic;color:var(--caramel)}
+.sec-sub{color:var(--mocha);max-width:36rem;margin-top:1rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;padding:.95rem 1.7rem;border-radius:999px;font-weight:600;font-size:.94rem;transition:transform .25s var(--ease),background .25s,box-shadow .25s,color .25s,border-color .25s;white-space:nowrap}
+.btn .ic{width:17px;height:17px}
+.btn-primary{background:var(--espresso);color:var(--cream)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(30,18,8,.5);background:#120a05}
+.btn-accent{background:var(--amber);color:#221610}
+.btn-accent:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(160,110,40,.55);background:#eab267}
+.btn-ghost{border:1.5px solid #C9B48C;color:var(--espresso);background:transparent}
+.btn-ghost:hover{border-color:var(--espresso);background:rgba(34,22,16,.04)}
+.btn-block{width:100%}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.panel-close{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);background:#fff;color:var(--espresso);transition:.25s;flex:none}
+.panel-close:hover{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+.panel-close.on-dark{border-color:rgba(246,240,228,.3);background:transparent;color:var(--cream)}
+.panel-close.on-dark:hover{background:var(--cream);color:var(--espresso)}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* ============ HEADER ============ */
+#siteHeader{position:fixed;top:0;left:0;right:0;z-index:91;transition:background .3s,box-shadow .3s}
+#siteHeader.scrolled{background:rgba(246,240,228,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(60,40,20,.09)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:78px}
+.logo{display:flex;align-items:center;gap:.55rem;font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;letter-spacing:-.01em}
+.logo svg{width:30px;height:30px;color:var(--caramel)}
+.nav-links{display:flex;gap:1.9rem;font-size:.92rem;font-weight:500}
+.nav-links a{position:relative;padding:.3rem 0;color:var(--mocha);transition:color .2s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--caramel);transition:width .25s var(--ease)}
+.nav-links a:hover{color:var(--espresso)}
+.nav-links a:hover::after{width:100%}
+.nav-right{display:flex;align-items:center;gap:.7rem}
+.icon-btn{position:relative;width:45px;height:45px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);background:var(--foam);transition:.25s}
+.icon-btn:hover{border-color:var(--espresso);transform:translateY(-2px)}
+#cartCount{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;border-radius:99px;background:var(--caramel);color:#fff;font-size:.68rem;font-weight:700;display:grid;place-items:center;padding:0 5px;border:2px solid var(--cream)}
+#cartCount.pop{animation:pop .45s var(--ease)}
+@keyframes pop{50%{transform:scale(1.45)}}
+.burger{display:none;width:45px;height:45px;border-radius:50%;border:1.5px solid var(--line);background:var(--foam);flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.burger i{display:block;width:20px;height:2px;background:var(--espresso);border-radius:2px}
+@media(max-width:920px){.nav-links{display:none}.burger{display:flex}}
+
+/* ============ MOBILE MENU ============ */
+#mobileMenu{position:fixed;inset:0;z-index:93;background:radial-gradient(120% 120% at 100% 0%,#3A2415,var(--espresso) 60%);color:var(--cream);display:flex;flex-direction:column;justify-content:center;padding:5.5rem 2rem 2.5rem;transform:translateY(-102%);transition:transform .55s var(--ease),visibility 0s .55s;visibility:hidden}
+#mobileMenu.open{transform:none;visibility:visible;transition:transform .55s var(--ease)}
+#closeMenu{position:absolute;top:18px;right:20px}
+.m-nav{display:flex;flex-direction:column}
+.m-link{font-family:'Fraunces',serif;font-size:clamp(2rem,7.5vw,3rem);padding:.65rem 0;border-bottom:1px solid rgba(246,240,228,.13);opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s var(--ease),color .2s}
+.m-link:hover{color:var(--amber)}
+#mobileMenu.open .m-link{opacity:1;transform:none}
+#mobileMenu.open .m-link:nth-child(1){transition-delay:.12s}#mobileMenu.open .m-link:nth-child(2){transition-delay:.18s}
+#mobileMenu.open .m-link:nth-child(3){transition-delay:.24s}#mobileMenu.open .m-link:nth-child(4){transition-delay:.30s}
+#mobileMenu.open .m-link:nth-child(5){transition-delay:.36s}
+.m-foot{margin-top:2.6rem;display:flex;flex-direction:column;gap:1rem;align-items:flex-start;color:#B49B7E;font-size:.9rem}
+
+/* ============ HERO ============ */
+.hero{padding:158px 0 90px;position:relative}
+.hero-grid{display:grid;gap:3.5rem;align-items:center}
+@media(min-width:960px){.hero-grid{grid-template-columns:1.02fr .98fr;gap:2rem}}
+.hero h1{font-size:clamp(2.9rem,5.6vw,4.8rem);margin:1.1rem 0 1.3rem}
+.hero h1 em{font-style:italic;color:var(--caramel)}
+.u-em{position:relative;display:inline-block;white-space:nowrap}
+.u-line{position:absolute;left:0;bottom:-.32em;width:100%;height:.3em;overflow:visible}
+.u-line path{stroke-dasharray:140;stroke-dashoffset:140;animation:draw 1s .8s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.lead{font-size:1.08rem;color:var(--mocha);max-width:33rem;margin-bottom:2rem}
+.hero-cta{display:flex;gap:.9rem;flex-wrap:wrap;margin-bottom:2.1rem}
+.social-proof{display:flex;align-items:center;gap:.9rem}
+.avatars{display:flex}
+.avatars span{width:36px;height:36px;border-radius:50%;border:2.5px solid var(--cream);display:grid;place-items:center;font-size:.62rem;font-weight:700;color:#fff;margin-left:-9px;font-family:'Inter'}
+.avatars span:first-child{margin-left:0}
+.social-proof p{font-size:.82rem;color:var(--muted)}
+.social-proof b{color:var(--espresso)}
+.hero-visual{position:relative;aspect-ratio:1/1.06;max-width:540px;width:100%;margin-inline:auto;border-radius:38px;background:radial-gradient(130% 100% at 15% 0%,#F6E9C9 0%,#EDDAB0 45%,#E3C992 100%);box-shadow:0 44px 80px -42px rgba(90,60,25,.45)}
+.hv-ring{position:absolute;inset:7%;border:1.5px dashed rgba(120,80,35,.35);border-radius:50%;animation:spin 48s linear infinite}
+.hv-ring2{position:absolute;inset:17%;border:1px solid rgba(120,80,35,.2);border-radius:50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hv-stage{position:absolute;inset:0;display:grid;place-items:center}
+.hv-bean{position:absolute;filter:drop-shadow(0 14px 14px rgba(60,35,10,.3))}
+.hv-bean svg{width:100%;height:auto}
+.b1{top:8%;left:7%;width:60px;animation:float1 7s ease-in-out infinite}
+.b2{bottom:15%;right:5%;width:44px;animation:float2 8s ease-in-out infinite}
+.b3{top:19%;right:11%;width:32px;animation:float1 6s 1s ease-in-out infinite}
+@keyframes float1{50%{transform:translateY(-16px) rotate(9deg)}}
+@keyframes float2{50%{transform:translateY(13px) rotate(-11deg)}}
+.hv-chip{position:absolute;background:var(--foam);border:1px solid var(--line);border-radius:16px;padding:.7rem .95rem;box-shadow:0 18px 34px -16px rgba(60,35,10,.4);display:flex;gap:.65rem;align-items:center;font-size:.8rem;font-weight:600;z-index:2}
+.hv-chip small{display:block;font-weight:500;color:var(--muted);font-size:.68rem}
+.chip-stars{top:12%;right:1%;animation:float2 7s .6s ease-in-out infinite;flex-direction:column;align-items:flex-start;gap:.3rem}
+.stars{display:flex;gap:2px;color:var(--amber)}
+.stars svg{width:13px;height:13px}
+.chip-roast{bottom:9%;left:-1%;animation:float1 8s 1.2s ease-in-out infinite}
+.chip-roast .ci-dot{width:34px;height:34px;border-radius:12px;background:var(--espresso);color:var(--amber);display:grid;place-items:center;flex:none}
+.chip-roast .ci-dot svg{width:18px;height:18px}
+.badge-rot{position:absolute;bottom:-38px;right:5%;width:130px;height:130px;border-radius:50%;background:var(--espresso);color:var(--cream);display:grid;place-items:center;box-shadow:0 20px 36px -14px rgba(30,18,8,.55);z-index:3}
+.badge-rot svg.txt{position:absolute;inset:9px;width:calc(100% - 18px);height:calc(100% - 18px);animation:spin 16s linear infinite}
+.badge-rot text{fill:var(--cream);font-size:7.7px;letter-spacing:.17em;font-family:'Inter';font-weight:600;text-transform:uppercase}
+.badge-rot .b-ico{width:32px;height:32px;color:var(--amber)}
+
+/* ============ COFFEE BAGS ============ */
+.bag{width:min(252px,64%);position:relative;filter:drop-shadow(0 34px 34px rgba(40,22,6,.42))}
+.bag-crimp{height:20px;margin:0 7%;background:repeating-linear-gradient(90deg,#160c05 0 5px,#2b1a0d 5px 10px);border-radius:6px 6px 0 0}
+.bag-body{background:linear-gradient(165deg,#552f18 0%,#31190b 55%,#1d0f06 100%);border-radius:4px 4px 18px 18px;padding:16px 14px 20px;position:relative}
+.bag-body::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,rgba(0,0,0,.35),transparent 18%,transparent 82%,rgba(0,0,0,.35));pointer-events:none}
+.bag-label{background:#F5EDDC;border-radius:12px;padding:16px 14px;text-align:center;color:var(--espresso);position:relative}
+.bl-top{display:flex;justify-content:space-between;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid #DCCBA6;padding-bottom:.55rem;margin-bottom:.85rem}
+.bl-bean{width:42px;height:42px;margin:0 auto .65rem;color:var(--caramel)}
+.bag-label strong{font-family:'Fraunces',serif;font-size:1.18rem;display:block;font-weight:700}
+.bl-origin{font-size:.66rem;color:var(--muted);display:block;margin-top:.25rem}
+.bl-row{display:flex;justify-content:space-between;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;border-top:1px solid #DCCBA6;margin-top:.85rem;padding-top:.65rem;color:var(--bark);font-weight:600}
+.mini-bag{position:relative;width:130px;height:184px;border-radius:10px;background:linear-gradient(165deg,var(--c1),var(--c2));display:flex;flex-direction:column;align-items:center;padding:24px 10px 12px;color:#F3E7D3;box-shadow:0 22px 34px -14px rgba(20,10,4,.55);transition:transform .45s var(--ease);z-index:1}
+.mini-bag::before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,rgba(0,0,0,.3),transparent 22%,transparent 78%,rgba(0,0,0,.3));pointer-events:none}
+.mb-crimp{position:absolute;top:-9px;left:8%;right:8%;height:12px;background:repeating-linear-gradient(90deg,#150b04 0 4px,#2a1a0d 4px 8px);border-radius:4px 4px 1px 1px}
+.mb-label{width:52px;height:52px;border-radius:50%;background:#F5EDDC;display:grid;place-items:center;color:var(--caramel);margin-bottom:.7rem}
+.mb-label svg{width:27px;height:27px}
+.mini-bag b{font-family:'Fraunces',serif;font-size:.88rem;text-align:center;line-height:1.15}
+.mb-o{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(243,231,211,.72);margin-top:.3rem}
+.mb-d{margin-top:auto;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;background:rgba(0,0,0,.3);padding:.28rem .6rem;border-radius:99px}
+.steam{position:absolute;top:52px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:2}
+.steam i{width:6px;height:16px;border-radius:99px;background:rgba(255,255,255,.55);filter:blur(2px);animation:rise 2.2s ease-in-out infinite}
+.steam i:nth-child(2){animation-delay:.4s}.steam i:nth-child(3){animation-delay:.8s}
+@keyframes rise{0%{transform:translateY(8px);opacity:0}30%{opacity:.9}100%{transform:translateY(-18px);opacity:0}}
+
+/* ============ MARQUEE ============ */
+.marquee{background:var(--espresso);color:var(--cream);padding:1.05rem 0;overflow:hidden}
+.mq-track{display:flex;width:max-content;animation:mq 26s linear infinite}
+.marquee:hover .mq-track{animation-play-state:paused}
+.mq-set{display:flex;align-items:center;gap:2.8rem;padding-right:2.8rem}
+.mq-item{font-family:'Fraunces',serif;font-style:italic;font-size:1.05rem;white-space:nowrap}
+.mq-dot{width:9px;height:9px;background:var(--caramel);transform:rotate(45deg);flex:none}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ============ STORY ============ */
+.story-grid{display:grid;gap:3rem}
+@media(min-width:960px){.story-grid{grid-template-columns:.9fr 1.1fr;gap:5rem}}
+.story-left{align-self:start}
+@media(min-width:960px){.story-left{position:sticky;top:120px}}
+.story h2{font-size:clamp(2.1rem,4vw,3.3rem);margin:.9rem 0 1.2rem}
+.story h2 em{font-style:italic;color:var(--caramel)}
+.story p{color:var(--mocha)}
+.story p + p{margin-top:1rem}
+.check-card{background:var(--foam);border:1px solid var(--line);border-radius:24px;padding:1.4rem 1.8rem;margin-top:2rem}
+.check{list-style:none}
+.check li{display:flex;gap:.9rem;padding:.95rem 0;border-bottom:1px dashed var(--line);align-items:flex-start;font-size:.94rem}
+.check li:last-child{border-bottom:none}
+.ck{width:24px;height:24px;border-radius:8px;background:var(--caramel);color:#fff;display:grid;place-items:center;flex:none;margin-top:.1rem}
+.ck svg{width:13px;height:13px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+.duo-card{background:var(--sand);border-radius:18px;padding:1.5rem}
+.duo-card>svg{width:28px;height:28px;color:var(--caramel);margin-bottom:.9rem}
+.duo-card b{font-family:'Fraunces',serif;display:block;margin-bottom:.3rem;font-size:1.05rem}
+.duo-card p{font-size:.87rem;color:var(--mocha)}
+@media(max-width:560px){.duo{grid-template-columns:1fr}}
+.stats-band{margin-top:5rem;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:22px;overflow:hidden;grid-template-columns:repeat(2,1fr)}
+@media(min-width:820px){.stats-band{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--cream);padding:2.1rem 1.6rem}
+.stat b{font-family:'Fraunces',serif;font-size:clamp(2.1rem,3.6vw,2.9rem);display:block;color:var(--espresso);line-height:1}
+.stat span{font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);display:block;margin-top:.55rem}
+
+/* ============ ROAST EXPLORER ============ */
+.roast-sec{background:radial-gradient(90% 130% at 82% -10%,#3A2415 0%,var(--espresso) 55%);color:var(--cream)}
+.roast-sec .eyebrow{color:var(--amber)}
+.roast-sec .eyebrow::before{background:var(--amber)}
+.roast-sec .sec-h em{color:var(--amber)}
+.roast-sec .sec-sub{color:#CBB693}
+.roast-grid{display:grid;gap:3rem;margin-top:3.2rem;align-items:center}
+@media(min-width:960px){.roast-grid{grid-template-columns:.92fr 1.08fr;gap:4rem}}
+.bean-stage{display:grid;place-items:center;position:relative}
+#roastBean{width:min(340px,74vw);filter:drop-shadow(0 34px 44px rgba(0,0,0,.5))}
+.bean-readouts{display:flex;gap:3rem;justify-content:center;margin-top:1.8rem;text-align:center}
+.bean-readouts b{font-family:'Fraunces',serif;font-size:1.9rem;display:block;color:var(--amber);font-variant-numeric:tabular-nums}
+.bean-readouts span{font-size:.72rem;text-transform:uppercase;letter-spacing:.13em;color:#B49B7E}
+.roast-panel{background:rgba(255,244,228,.045);border:1px solid rgba(246,240,228,.15);border-radius:28px;padding:2.2rem}
+.rp-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.16em;color:#B49B7E}
+#roastStage{font-family:'Fraunces',serif;font-size:clamp(1.7rem,3vw,2.2rem);margin:.3rem 0 1.4rem}
+.r-labels{display:flex;justify-content:space-between;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;margin-top:.7rem}
+.r-labels span{opacity:.5;transition:.25s;font-weight:600}
+.r-labels span.on{opacity:1;color:var(--amber)}
+.roast-notes-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.16em;color:#B49B7E;margin:1.8rem 0 .8rem;display:block}
+.notes{display:flex;gap:.55rem;flex-wrap:wrap;list-style:none;transition:opacity .16s,transform .16s}
+.notes.fade{opacity:0;transform:translateY(6px)}
+.notes li{background:rgba(224,164,88,.14);border:1px solid rgba(224,164,88,.35);color:#F2D9AE;padding:.42rem .9rem;border-radius:99px;font-size:.82rem}
+.meters{margin-top:1.8rem;display:grid;gap:1.05rem}
+.meter .m-row{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:.45rem}
+.meter .m-row span{color:#CBB693}
+.meter .m-row b{color:var(--cream);font-variant-numeric:tabular-nums}
+.meter .track{height:8px;background:rgba(246,240,228,.13);border-radius:99px;overflow:hidden}
+.meter .bar{height:100%;background:linear-gradient(90deg,var(--amber),var(--caramel));border-radius:99px;width:50%;transition:width .3s var(--ease)}
+
+/* ============ RANGE INPUTS ============ */
+input.range{--fill:50%;-webkit-appearance:none;appearance:none;background:transparent;height:28px;width:100%;cursor:pointer;margin:0}
+input.range::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(90deg,var(--caramel) var(--fill),var(--sand2) var(--fill))}
+input.range::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--espresso);margin-top:-8px;box-shadow:0 2px 8px rgba(40,25,10,.35);transition:transform .15s}
+input.range:active::-webkit-slider-thumb{transform:scale(1.18)}
+input.range::-moz-range-track{height:6px;border-radius:99px;background:linear-gradient(90deg,var(--caramel) var(--fill),var(--sand2) var(--fill))}
+input.range::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--espresso);box-shadow:0 2px 8px rgba(40,25,10,.35)}
+input.range:focus-visible{outline:2px solid var(--amber);outline-offset:6px;border-radius:99px}
+#roastRange::-webkit-slider-runnable-track{background:linear-gradient(90deg,#D8A15F,#9A6335 45%,#4A2C16 75%,#200F06);height:8px}
+#roastRange::-webkit-slider-thumb{width:26px;height:26px;margin-top:-9px;background:var(--amber);border:3px solid var(--foam)}
+#roastRange::-moz-range-track{background:linear-gradient(90deg,#D8A15F,#9A6335 45%,#4A2C16 75%,#200F06);height:8px}
+#roastRange::-moz-range-thumb{width:20px;height:20px;background:var(--amber);border:3px solid var(--foam)}
+
+/* ============ COLLECTION ============ */
+.coll-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.4rem;margin-bottom:2.6rem;flex-wrap:wrap}
+.filters{display:flex;gap:.5rem;flex-wrap:wrap}
+.f-pill{padding:.55rem 1.1rem;border:1.5px solid var(--line);border-radius:99px;font-size:.8rem;font-weight:600;background:var(--foam);transition:.25s}
+.f-pill:hover{border-color:var(--caramel)}
+.f-pill.active{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+.coll-grid{display:grid;gap:1.6rem}
+@media(min-width:820px){.coll-grid{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--foam);border:1px solid var(--line);border-radius:26px;overflow:hidden;transition:transform .4s var(--ease),box-shadow .4s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-10px);box-shadow:0 32px 60px -30px rgba(70,45,15,.4)}
+.card-top{position:relative;height:255px;display:grid;place-items:center;overflow:hidden}
+.card-top::before{content:"";position:absolute;width:270px;height:270px;border-radius:50%;background:rgba(255,255,255,.15);top:-95px;right:-70px}
+.card:hover .mini-bag{transform:translateY(-12px) rotate(-2deg)}
+.bg-dark{background:radial-gradient(125% 135% at 20% 0%,#5A3A22 0%,#33200F 72%)}
+.bg-amber{background:radial-gradient(125% 135% at 20% 0%,#E8B06A 0%,#C4743B 78%)}
+.bg-sand{background:radial-gradient(125% 135% at 20% 0%,#F2E0B8 0%,#DCB97E 82%)}
+.tag{position:absolute;top:14px;left:14px;background:rgba(20,12,6,.55);color:#F6E8CE;font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;padding:.35rem .75rem;border-radius:99px;backdrop-filter:blur(4px);z-index:2}
+.card-body{padding:1.5rem;display:flex;flex-direction:column;flex:1}
+.card-body h3{font-size:1.45rem;margin-bottom:.25rem}
+.origin{font-size:.8rem;color:var(--muted);margin-bottom:.95rem}
+.chips{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.chips span{font-size:.72rem;background:var(--sand);border-radius:99px;padding:.32rem .72rem;color:var(--bark);font-weight:500}
+.card-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:1.15rem;border-top:1px solid var(--line)}
+.price{font-family:'Fraunces',serif;font-size:1.4rem}
+.add-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--espresso);color:var(--cream);padding:.72rem 1.15rem;border-radius:14px;font-size:.84rem;font-weight:600;transition:background .25s,transform .15s}
+.add-btn .ic{width:16px;height:16px}
+.add-btn:hover{background:var(--caramel)}
+.add-btn.added{background:#6E8252}
+
+/* ============ BREW CALCULATOR ============ */
+.brew-sec{background:var(--sand)}
+.brew-card{background:var(--foam);border:1px solid var(--line);border-radius:30px;overflow:hidden;display:grid;margin-top:3rem}
+@media(min-width:900px){.brew-card{grid-template-columns:1.05fr .95fr}}
+.brew-controls{padding:2.2rem}
+.method-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-bottom:2.1rem}
+@media(max-width:560px){.method-grid{grid-template-columns:repeat(2,1fr)}}
+.m-btn{padding:.78rem .5rem;border:1.5px solid var(--line);border-radius:14px;font-size:.82rem;font-weight:600;background:#fff;transition:.25s;text-align:center}
+.m-btn:hover{border-color:var(--caramel)}
+.m-btn.active{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+.ctl{margin-bottom:1.55rem}
+.ctl-row{display:flex;justify-content:space-between;font-size:.86rem;font-weight:600;margin-bottom:.5rem}
+.ctl-row .val{color:var(--caramel);font-variant-numeric:tabular-nums}
+.brew-out{background:radial-gradient(130% 130% at 100% 0%,#3A2415,#221610 62%);color:var(--cream);padding:2.2rem;display:flex;flex-direction:column;justify-content:center}
+.out-kicker{font-size:.72rem;text-transform:uppercase;letter-spacing:.18em;color:var(--amber);font-weight:700}
+.out-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem 1rem;margin:1.4rem 0}
+.out-cell b{font-family:'Fraunces',serif;font-size:1.85rem;display:block;color:var(--amber);font-variant-numeric:tabular-nums;line-height:1.1}
+.out-cell span{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:#B49B7E}
+.out-strength{margin-bottom:1.4rem}
+.out-strength>span{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:#B49B7E;display:block;margin-bottom:.55rem}
+.str-bars{display:flex;gap:.4rem}
+.str-bars i{width:28px;height:10px;border-radius:99px;background:rgba(246,240,228,.15);transition:background .3s}
+.str-bars i.on{background:var(--amber)}
+.brew-tip{margin-top:auto;background:rgba(224,164,88,.1);border:1px solid rgba(224,164,88,.32);padding:.95rem 1.1rem;border-radius:16px;font-size:.86rem;display:flex;gap:.7rem;align-items:flex-start;transition:background .3s,border-color .3s}
+.brew-tip svg{width:19px;height:19px;flex:none;margin-top:.1rem;color:var(--amber)}
+.brew-tip.warn{background:rgba(200,90,60,.14);border-color:rgba(220,120,80,.45)}
+.brew-tip.warn svg{color:#E08A6A}
+
+/* ============ REVIEWS ============ */
+.t-viewport{overflow:hidden;max-width:780px;margin:2.4rem auto 0}
+.t-track{display:flex;transition:transform .55s var(--ease)}
+.t-slide{min-width:100%;padding:0 .5rem;text-align:center}
+.t-slide blockquote{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(1.25rem,2.3vw,1.65rem);line-height:1.42;margin:1.1rem 0 1.6rem}
+.t-slide blockquote::before{content:"“";display:block;font-size:3.6rem;color:var(--amber);line-height:.55;margin-bottom:1rem;font-style:normal}
+.t-person b{display:block;font-size:.95rem}
+.t-person span{font-size:.8rem;color:var(--muted)}
+.t-controls{display:flex;align-items:center;justify-content:center;gap:1.4rem;margin-top:2.2rem}
+.t-arrow{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;transition:.25s;background:#fff}
+.t-arrow:hover{background:var(--espresso);color:var(--cream);border-color:var(--espresso)}
+.t-dots{display:flex;gap:.5rem}
+.dot{width:9px;height:9px;border-radius:99px;background:var(--sand2);transition:.3s;padding:0}
+.dot.active{width:26px;background:var(--caramel)}
+
+/* ============ NEWSLETTER ============ */
+.nl-sec{background-image:radial-gradient(rgba(224,164,88,.08) 1.5px,transparent 1.5px),radial-gradient(80% 140% at 50% -20%,#3A2415,var(--espresso) 62%);background-size:26px 26px,cover;color:var(--cream);text-align:center}
+.nl-sec .eyebrow{justify-content:center}
+.nl-sec h2{font-size:clamp(2.1rem,4.4vw,3.3rem);margin-top:.9rem}
+.nl-sec h2 em{font-style:italic;color:var(--amber)}
+.nl-sec .nl-sub{color:#CBB693;max-width:32rem;margin:1rem auto 0;font-size:.97rem}
+.nl-form{display:flex;gap:.55rem;max-width:520px;margin:2rem auto 0;background:var(--foam);padding:.5rem;border-radius:99px}
+.nl-form input{flex:1;border:none;outline:none;background:transparent;padding:.8rem 1.2rem;font:inherit;color:var(--ink);min-width:0;font-size:.95rem}
+.nl-form input::placeholder{color:#A89880}
+.nl-form button{background:var(--caramel);color:#fff;border-radius:99px;padding:.85rem 1.7rem;font-weight:600;transition:.25s;white-space:nowrap;font-size:.92rem}
+.nl-form button:hover{background:#a85f2c}
+.nl-form.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.nl-err{margin-top:.9rem;color:#F0A98F;font-size:.85rem;min-height:1.3em}
+.nl-note{font-size:.76rem;color:#B49B7E;margin-top:.6rem}
+.nl-success{padding:2rem 0}
+.nl-check{width:64px;height:64px;border-radius:50%;background:var(--caramel);display:grid;place-items:center;margin:0 auto 1.2rem;color:#fff;animation:popIn .6s var(--ease)}
+.nl-check svg{width:30px;height:30px}
+@keyframes popIn{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+.nl-success h3{font-size:1.7rem;margin-bottom:.5rem}
+.nl-success p{color:#CBB693;font-size:.92rem}
+@media(max-width:560px){.nl-form{flex-direction:column;border-radius:24px}.nl-form button{width:100%}}
+
+/* ============ FOOTER ============ */
+footer{background:#180f08;color:#D9C7A8;padding:4.5rem 0 2rem}
+.foot-grid{display:grid;gap:2.6rem;grid-template-columns:1.5fr 1fr 1fr 1fr}
+@media(max-width:860px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.foot-grid{grid-template-columns:1fr}}
+.foot-brand .logo{color:var(--cream)}
+.foot-brand p{font-size:.88rem;color:#A98F6E;max-width:26rem;margin-top:1rem}
+.foot-col h4{color:#fff;font-size:.76rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem;font-family:'Inter';font-weight:600}
+.foot-col a{display:block;padding:.32rem 0;font-size:.9rem;color:#C4AF8C;transition:color .2s,transform .2s}
+.foot-col a:hover{color:#fff;transform:translateX(3px)}
+.socials{display:flex;gap:.6rem;margin-top:1.4rem}
+.socials a{width:41px;height:41px;border:1px solid rgba(217,199,168,.28);border-radius:12px;display:grid;place-items:center;transition:.25s;color:#D9C7A8}
+.socials a svg{width:18px;height:18px}
+.socials a:hover{background:var(--caramel);border-color:var(--caramel);color:#fff;transform:translateY(-3px)}
+.foot-mark{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(3.6rem,13.2vw,11.2rem);line-height:.95;text-align:center;margin:3.8rem 0 2.6rem;letter-spacing:-.02em;user-select:none;color:rgba(217,199,168,.1)}
+@supports(-webkit-text-stroke:1px red){.foot-mark{color:transparent;-webkit-text-stroke:1px rgba(217,199,168,.3)}}
+.foot-bar{border-top:1px solid rgba(217,199,168,.15);padding-top:1.6rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.78rem;color:#A98F6E}
+.foot-bar a:hover{color:#fff}
+
+/* ============ CART DRAWER ============ */
+.overlay{position:fixed;inset:0;background:rgba(20,12,6,.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .3s;z-index:92}
+.overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(430px,100%);background:var(--foam);z-index:94;transform:translateX(103%);transition:transform .45s var(--ease);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(20,12,6,.3)}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:1.15rem 1.4rem;border-bottom:1px solid var(--line)}
+.drawer-head h3{font-size:1.3rem}
+.drawer-head span{color:var(--caramel)}
+.drawer-body{flex:1;overflow-y:auto;padding:0 1.4rem}
+.ci{display:flex;gap:1rem;padding:1.15rem 0;border-bottom:1px solid var(--line)}
+.ci-thumb{width:56px;height:66px;border-radius:10px;background:var(--c,#3A2818);display:grid;place-items:center;color:#E8B06A;flex:none}
+.ci-thumb svg{width:26px;height:26px}
+.ci-info{flex:1;min-width:0}
+.ci-info b{font-size:.95rem}
+.ci-info>span{display:block;font-size:.76rem;color:var(--muted);margin:.2rem 0 .55rem}
+.qty{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:99px;overflow:hidden;background:#fff}
+.qty button{width:31px;height:31px;display:grid;place-items:center;font-size:1.05rem;transition:background .2s;line-height:1}
+.qty button:hover{background:var(--sand)}
+.qty i{width:26px;text-align:center;font-style:normal;font-size:.86rem;font-weight:700}
+.ci-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;padding-top:.2rem}
+.ci-price{font-weight:700;font-size:.95rem}
+.ci-remove{font-size:.74rem;color:var(--muted);text-decoration:underline}
+.ci-remove:hover{color:#B4432E}
+.cart-empty{text-align:center;padding:3.6rem 1rem;color:var(--muted)}
+.cart-empty svg{width:54px;height:54px;margin:0 auto 1rem;color:var(--sand2)}
+.cart-empty b{color:var(--espresso);font-family:'Fraunces',serif;font-size:1.2rem}
+.cart-foot{border-top:1px solid var(--line);padding:1.15rem 1.4rem 1.4rem;background:var(--foam)}
+.sub-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.35rem;font-size:.95rem}
+.sub-row b{font-family:'Fraunces',serif;font-size:1.45rem}
+.ship-note{font-size:.74rem;color:var(--muted);margin-bottom:1rem}
+.link-btn{display:block;margin:.85rem auto 0;font-size:.84rem;color:var(--muted);text-decoration:underline}
+.link-btn:hover{color:var(--espresso)}
+
+/* ============ TOAST & MISC ============ */
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,90px);background:var(--espresso);color:var(--cream);padding:.8rem 1.2rem;border-radius:14px;z-index:99;transition:transform .4s var(--ease);display:flex;gap:.65rem;align-items:center;font-size:.88rem;box-shadow:0 18px 40px -12px rgba(0,0,0,.5);max-width:calc(100vw - 40px)}
+.toast.show{transform:translate(-50%,0)}
+.toast .t-ic{width:24px;height:24px;border-radius:50%;background:var(--caramel);display:grid;place-items:center;flex:none;color:#fff}
+.toast .t-ic svg{width:13px;height:13px}
+#backTop{position:fixed;right:22px;bottom:22px;width:49px;height:49px;border-radius:50%;background:var(--espresso);color:var(--cream);display:grid;place-items:center;z-index:96;opacity:0;pointer-events:none;transform:translateY(12px);transition:.3s;box-shadow:0 12px 26px -8px rgba(0,0,0,.45)}
+#backTop.show{opacity:1;pointer-events:auto;transform:none}
+#backTop:hover{background:var(--caramel)}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ICON SPRITE -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-bean" viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="7.6" ry="10" transform="rotate(26 12 12)" fill="currentColor"/><path d="M7.9 3.8C10.8 7.5 13.2 16.5 16.1 20.2" stroke="#F6F0E4" stroke-width="1.7" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5.5 8h13l-1.1 11.4a2 2 0 0 1-2 1.8H8.6a2 2 0 0 1-2-1.8L5.5 8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 10.5V6.8a3 3 0 0 1 6 0v3.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M4 12h15M13 5.5 19.5 12 13 18.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M20 12H5M11 5.5 4.5 12 11 18.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4.5 12.5 5 5 10-11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.6l2.8 5.9 6.4.8-4.7 4.4 1.2 6.3L12 17l-5.7 3 1.2-6.3L2.8 9.3l6.4-.8Z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19C5 9 12 4 20 4c0 8-5 15-15 15Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M5 19c3-6 7-9 11-11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.8" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-youtube" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12.5" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.2 9.4v5l4.6-2.5Z" fill="currentColor"/></symbol>
+</svg>
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ HEADER ============ -->
+<header id="siteHeader">
+  <div class="container nav-inner">
+    <a class="logo" href="#top" aria-label="Emberline home"><svg aria-hidden="true"><use href="#i-bean"/></svg>Emberline</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#story">Story</a>
+      <a href="#roast">Roast Explorer</a>
+      <a href="#collection">Collection</a>
+      <a href="#brew">Brew Guide</a>
+      <a href="#reviews">Reviews</a>
+    </nav>
+    <div class="nav-right">
+      <button class="icon-btn" id="cartBtn" aria-label="Open cart">
+        <svg class="ic" aria-hidden="true"><use href="#i-bag"/></svg>
+        <span id="cartCount" style="display:none">0</span>
+      </button>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><i></i><i></i><i></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MOBILE MENU ============ -->
+<div id="mobileMenu" role="dialog" aria-modal="true" aria-label="Menu">
+  <button class="panel-close on-dark" id="closeMenu" aria-label="Close menu"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button>
+  <nav class="m-nav" aria-label="Mobile">
+    <a class="m-link" href="#story">Our Story</a>
+    <a class="m-link" href="#roast">Roast Explorer</a>
+    <a class="m-link" href="#collection">Collection</a>
+    <a class="m-link" href="#brew">Brew Guide</a>
+    <a class="m-link" href="#reviews">Reviews</a>
+  </nav>
+  <div class="m-foot">
+    <a class="btn btn-accent" href="#collection">Shop the collection <svg class="ic" aria-hidden="true"><use href="#i-arrow-r"/></svg></a>
+    <span>roasts@emberline.coffee · Brooklyn, NY</span>
+  </div>
+</div>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">Small-batch coffee roasters</span>
+        <h1>Coffee you'll <span class="u-em"><em>remember</em><svg class="u-line" viewBox="0 0 120 12" aria-hidden="true" preserveAspectRatio="none"><path d="M2 8 C 30 2, 60 10, 118 4" fill="none" stroke="#E0A458" stroke-width="4" stroke-linecap="round"/></svg></span> brewing.</h1>
+        <p class="lead">Small-lot roasts from 23 single origins, roasted in Brooklyn and on your doorstep within 48 hours of leaving the drum. Because the best coffee shouldn't sit in a warehouse.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#collection">Shop the collection <svg class="ic" aria-hidden="true"><use href="#i-arrow-r"/></svg></a>
+          <a class="btn btn-ghost" href="#brew">Brew a better cup</a>
+        </div>
+        <div class="social-proof">
+          <div class="avatars" aria-hidden="true">
+            <span style="background:#C4743B">MJ</span>
+            <span style="background:#3A2818">PN</span>
+            <span style="background:#8A5A33">DO</span>
+          </div>
+          <p><b>4.9 / 5</b> from 1,200+ verified reviews</p>
+        </div>
+      </div>
+      <div class="hero-visual" id="heroVisual">
+        <div class="hv-ring" aria-hidden="true"></div>
+        <div class="hv-ring2" aria-hidden="true"></div>
+        <div class="hv-stage">
+          <div class="bag" data-depth="9">
+            <div class="bag-crimp"></div>
+            <div class="bag-body">
+              <div class="bag-label">
+                <div class="bl-top"><span>Emberline</span><span>Roasters</span></div>
+                <svg class="bl-bean" aria-hidden="true"><use href="#i-bean"/></svg>
+                <strong>Midnight Ember</strong>
+                <span class="bl-origin">Ethiopia — Yirgacheffe · 1,950m</span>
+                <div class="bl-row"><span>Dark Roast</span><span>250 g</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hv-bean b1" data-depth="26" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-bean"/></svg></div>
+        <div class="hv-bean b2" data-depth="-16" style="color:#B97B43" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-bean"/></svg></div>
+        <div class="hv-bean b3" data-depth="18" style="color:#8A5A33" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-bean"/></svg></div>
+        <div class="hv-chip chip-stars" data-depth="14">
+          <div class="stars" aria-hidden="true"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
+          <span>1,200+ reviews<small>across 23 origins</small></span>
+        </div>
+        <div class="hv-chip chip-roast" data-depth="-12">
+          <span class="ci-dot"><svg aria-hidden="true"><use href="#i-bean"/></svg></span>
+          <span>Roast #1842<small>Shipped 48h ago</small></span>
+        </div>
+        <div class="badge-rot" aria-hidden="true">
+          <svg class="txt" viewBox="0 0 100 100">
+            <defs><path id="circPath" d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0"/></defs>
+            <text><textPath href="#circPath">Single origin · Small batch · Roasted fresh ·</textPath></text>
+          </svg>
+          <svg class="b-ico" aria-hidden="true"><use href="#i-bean"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MARQUEE ============ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="mq-track">
+      <div class="mq-set">
+        <span class="mq-item">Single-origin lots</span><span class="mq-dot"></span>
+        <span class="mq-item">Roasted in small batches</span><span class="mq-dot"></span>
+        <span class="mq-item">Fresh within 48 hours</span><span class="mq-dot"></span>
+        <span class="mq-item">Compostable packaging</span><span class="mq-dot"></span>
+        <span class="mq-item">Free shipping over $50</span><span class="mq-dot"></span>
+        <span class="mq-item">Cupping notes with every bag</span><span class="mq-dot"></span>
+      </div>
+      <div class="mq-set">
+        <span class="mq-item">Single-origin lots</span><span class="mq-dot"></span>
+        <span class="mq-item">Roasted in small batches</span><span class="mq-dot"></span>
+        <span class="mq-item">Fresh within 48 hours</span><span class="mq-dot"></span>
+        <span class="mq-item">Compostable packaging</span><span class="mq-dot"></span>
+        <span class="mq-item">Free shipping over $50</span><span class="mq-dot"></span>
+        <span class="mq-item">Cupping notes with every bag</span><span class="mq-dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STORY ============ -->
+  <section class="story" id="story">
+    <div class="container">
+      <div class="story-grid">
+        <div class="story-left">
+          <span class="eyebrow">Our story</span>
+          <h2>Roasted with intention, <em>chosen</em> — never made.</h2>
+          <p>We started Emberline in a 12-square-meter roaster in 2019 with a simple frustration: the cupping notes on throwaway bags described farms we could never find again. So we built relationships instead.</p>
+          <p>Today we work directly with 23 growers across 12 countries — paying 2.1× commodity prices, publishing every farm's altitude, wash process and roast date, and shipping before the coffee peaks and fades.</p>
+        </div>
+        <div>
+          <ul class="check check-card">
+            <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span><b>Direct-trade, always.</b> No brokers, no mystery — every farm visits us annually to taste and approve.</span></li>
+            <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span><b>Roast curves from real data.</b> We log bean temperature, drop point and development time on every batch.</span></li>
+            <li><span class="ck"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span><b>Freshness you can verify.</b> Every bag carries its roast date and a cupping-notes QR code.</span></li>
+          </ul>
+          <div class="duo">
+            <div class="duo-card">
+              <svg aria-hidden="true"><use href="#i-pin"/></svg>
+              <b>Direct from the farm</b>
+              <p>Options ship from Ethiopia, Colombia, Kenya and 9 more high-altitude regions — traceable to the farm gate.</p>
+            </div>
+            <div class="duo-card">
+              <svg aria-hidden="true"><use href="#i-leaf"/></svg>
+              <b>Zero-waste packaging</b>
+              <p>Compostable valve bags, mushroom packaging for gear, and a returns program on any bag brewed within 14 days.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stats-band">
+        <div class="stat"><b class="count" data-count="23">0</b><span>Single origins</span></div>
+        <div class="stat"><b class="count" data-count="18" data-suffix="k">0</b><span>Lbs roasted monthly</span></div>
+        <div class="stat"><b class="count" data-count="4.9" data-decimals="1">0</b><span>Avg. community rating</span></div>
+        <div class="stat"><b class="count" data-count="96" data-suffix="%">0</b><span>Compostable packaging</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ROAST EXPLORER ============ -->
+  <section class="roast-sec" id="roast">
+    <div class="container">
+      <span class="eyebrow">Interactive</span>
+      <h2 class="sec-h">Explore the <em>roast</em> spectrum.</h2>
+      <p class="sec-sub">There's no wrong roast — only the right one for you. Slide from light to dark and watch the bean, temperature, sweetness and character shift in real time.</p>
+      <div class="roast-grid">
+        <div>
+          <div class="bean-stage">
+            <svg id="roastBean" viewBox="0 0 200 200" role="img" aria-label="Coffee bean that darkens as you move the roast slider">
+              <ellipse id="beanBody" cx="100" cy="100" rx="68" ry="94" transform="rotate(26 100 100)" fill="#C98B4E"/>
+              <path id="beanCrease" d="M59 18 C 92 60, 104 130, 141 182" fill="none" stroke="#8C5A32" stroke-width="11" stroke-linecap="round"/>
+              <g id="cracks" stroke="#120a04" stroke-width="2.4" stroke-linecap="round" fill="none" opacity="0">
+                <path d="M60 60 74 70 M68 84 82 78"/>
+                <path d="M118 96 132 104 M112 128 126 122"/>
+                <path d="M76 130 88 138 M96 52 108 60"/>
+              </g>
+            </svg>
+          </div>
+          <div class="bean-readouts">
+            <div><b id="roastTemp">204°C</b><span>Drop temp</span></div>
+            <div><b id="roastDev">16 min</b><span>Development</span></div>
+          </div>
+        </div>
+        <div class="roast-panel">
+          <span class="rp-label">Roast level</span>
+          <h3 id="roastStage">Medium Roast</h3>
+          <input type="range" class="range" id="roastRange" min="0" max="100" step="1" value="50" aria-label="Roast level, light to dark">
+          <div class="r-labels"><span id="labL">Light</span><span id="labM" class="on">Medium</span><span id="labD">Dark</span></div>
+          <span class="roast-notes-label">Tasting notes</span>
+          <ul class="notes" id="roastNotes" data-v="Medium Roast"><li>Caramel</li><li>Red berries</li><li>Honey</li></ul>
+          <div class="meters">
+            <div class="meter"><div class="m-row"><span>Acidity</span><b id="val-acid">58%</b></div><div class="track"><div class="bar" id="bar-acid" style="width:58%"></div></div></div>
+            <div class="meter"><div class="m-row"><span>Body</span><b id="val-body">60%</b></div><div class="track"><div class="bar" id="bar-body" style="width:60%"></div></div></div>
+            <div class="meter"><div class="m-row"><span>Sweetness</span><b id="val-sweet">87%</b></div><div class="track"><div class="bar" id="bar-sweet" style="width:87%"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COLLECTION ============ -->
+  <section id="collection">
+    <div class="container">
+      <div class="coll-head">
+        <div>
+          <span class="eyebrow">The collection</span>
+          <h2 class="sec-h">Fresh roasts, <em>shipped fast.</em></h2>
+        </div>
+        <div class="filters" role="group" aria-label="Filter coffee by roast level">
+          <button class="f-pill active" data-filter="all">All</button>
+          <button class="f-pill" data-filter="Light">Light</button>
+          <button class="f-pill" data-filter="Medium">Medium</button>
+          <button class="f-pill" data-filter="Dark">Dark</button>
+        </div>
+      </div>
+      <div class="coll-grid" id="collGrid">
+        <article class="card" data-tag="Dark">
+          <div class="card-top bg-dark">
+            <span class="tag">Dark Roast</span>
+            <div class="steam" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="mini-bag" style="--c1:#5A3418;--c2:#1D0F06">
+              <span class="mb-crimp"></span>
+              <span class="mb-label"><svg aria-hidden="true"><use href="#i-bean"/></svg></span>
+              <b>Midnight Ember</b>
+              <span class="mb-o">Ethiopia</span>
+              <span class="mb-d">Dark · 250g</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>Midnight Ember</h3>
+            <p class="origin">Ethiopia · Yirgacheffe · 1,950m · Natural</p>
+            <div class="chips"><span>Dark chocolate</span><span>Smoke</span><span>Molasses</span></div>
+            <div class="card-foot">
+              <span class="price">$24</span>
+              <button class="add-btn" data-add="midnight"><svg class="ic" aria-hidden="true"><use href="#i-bag"/></svg> Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-tag="Medium">
+          <div class="card-top bg-amber">
+            <span class="tag">Medium Roast</span>
+            <div class="steam" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="mini-bag" style="--c1:#C97F3F;--c2:#7A4416">
+              <span class="mb-crimp"></span>
+              <span class="mb-label"><svg aria-hidden="true"><use href="#i-bean"/></svg></span>
+              <b>Golden Hour</b>
+              <span class="mb-o">Colombia</span>
+              <span class="mb-d">Medium · 250g</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>Golden Hour</h3>
+            <p class="origin">Colombia · Huila · 1,700m · Washed</p>
+            <div class="chips"><span>Caramel</span><span>Red berries</span><span>Wild honey</span></div>
+            <div class="card-foot">
+              <span class="price">$22</span>
+              <button class="add-btn" data-add="golden"><svg class="ic" aria-hidden="true"><use href="#i-bag"/></svg> Add to cart</button>
+            </div>
+          </div>
+        </article>
+        <article class="card" data-tag="Light">
+          <div class="card-top bg-sand">
+            <span class="tag">Light Roast</span>
+            <div class="steam" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="mini-bag" style="--c1:#C08A4F;--c2:#7C4E24">
+              <span class="mb-crimp"></span>
+              <span class="mb-label"><svg aria-hidden="true"><use href="#i-bean"/></svg></span>
+              <b>Morning Fog</b>
+              <span class="mb-o">Kenya</span>
+              <span class="mb-d">Light · 250g</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>Morning Fog</h3>
+            <p class="origin">Kenya · Nyeri · 1,850m · Washed</p>
+            <div class="chips"><span>Bergamot</span><span>Jasmine</span><span>Apricot</span></div>
+            <div class="card-foot">
+              <span class="price">$23</span>
+              <button class="add-btn" data-add="fog"><svg class="ic" aria-hidden="true"><use href="#i-bag"/></svg> Add to cart</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BREW GUIDE ============ -->
+  <section class="brew-sec" id="brew">
+    <div class="container">
+      <span class="eyebrow">Brew guide</span>
+      <h2 class="sec-h">Dial in your <em>perfect</em> cup.</h2>
+      <p class="sec-sub">Pick a method, then adjust dose, ratio and water temperature — the guide recalculates yield, time, strength and warns you off bitterness in real time.</p>
+      <div class="brew-card">
+        <div class="brew-controls">
+          <div class="method-grid" role="group" aria-label="Brew method">
+            <button class="m-btn active" data-method="pour">Pour Over</button>
+            <button class="m-btn" data-method="espresso">Espresso</button>
+            <button class="m-btn" data-method="press">French Press</button>
+            <button class="m-btn" data-method="cold">Cold Brew</button>
+          </div>
+          <div class="ctl">
+            <div class="ctl-row"><label for="dose">Coffee dose</label><span class="val" id="doseVal">20 g</span></div>
+            <input class="range" type="range" id="dose" min="10" max="40" step="1" value="20">
+          </div>
+          <div class="ctl">
+            <div class="ctl-row"><label for="ratio">Water : Coffee ratio</label><span class="val" id="ratioVal">1 : 16</span></div>
+            <input class="range" type="range" id="ratio" min="10" max="22" step="0.5" value="16">
+          </div>
+          <div class="ctl">
+            <div class="ctl-row"><label for="temp">Water temperature</label><span class="val" id="tempVal">94 °C</span></div>
+            <input class="range" type="range" id="temp" min="85" max="100" step="1" value="94">
+          </div>
+        </div>
+        <div class="brew-out">
+          <span class="out-kicker">Your brew</span>
+          <div class="out-grid">
+            <div class="out-cell"><b id="outWater">320 ml</b><span>Water needed</span></div>
+            <div class="out-cell"><b id="outTime">~3:18</b><span>Est. time</span></div>
+            <div class="out-cell"><b id="outDose">20 g</b><span>Coffee</span></div>
+            <div class="out-cell"><b id="outTemp">94°C</b><span>Water temp</span></div>
+          </div>
+          <div class="out-strength">
+            <span>Strength</span>
+            <div class="str-bars" id="strBars"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="brew-tip" id="brewTip">
+            <svg aria-hidden="true"><use href="#i-info"/></svg>
+            <span id="tipText">Bloom with 50g of water for 30 seconds before the main pour.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REVIEWS ============ -->
+  <section id="reviews">
+    <div class="container">
+      <div style="text-align:center">
+        <span class="eyebrow" style="justify-content:center">Reviews</span>
+        <h2 class="sec-h">Worded by the <em>converted.</em></h2>
+      </div>
+      <div class="t-viewport">
+        <div class="t-track" id="tTrack">
+          <article class="t-slide">
+            <div class="stars" style="justify-content:center" aria-label="5 out of 5 stars"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
+            <blockquote>Their Ethiopian is the first bag that's actually transported me somewhere. I've cupped with professionals in Copenhagen — this wins, every time.</blockquote>
+            <div class="t-person"><b>Mara Jensen</b><span>Professional Barista · Copenhagen</span></div>
+          </article>
+          <article class="t-slide">
+            <div class="stars" style="justify-content:center" aria-label="5 out of 5 stars"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
+            <blockquote>Roasted right before shipping and dialed to perfection out of the box — my home espresso went from inconsistent to café-level in a single weekend.</blockquote>
+            <div class="t-person"><b>Priya Nair</b><span>Product Designer · Toronto</span></div>
+          </article>
+          <article class="t-slide">
+            <div class="stars" style="justify-content:center" aria-label="5 out of 5 stars"><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg><svg><use href="#i-star"/></svg></div>
+            <blockquote>I plan trips around their flights. The cupping invitations for rare origins are the most valuable emails in my inbox — full stop.</blockquote>
+            <div class="t-person"><b>Daniel Okafor</b><span>Travel Writer · Lagos</span></div>
+          </article>
+        </div>
+      </div>
+      <div class="t-controls">
+        <button class="t-arrow" id="tPrev" aria-label="Previous review"><svg class="ic" aria-hidden="true"><use href="#i-arrow-l"/></svg></button>
+        <div class="t-dots" id="tDots"></div>
+        <button class="t-arrow" id="tNext" aria-label="Next review"><svg class="ic" aria-hidden="true"><use href="#i-arrow-r"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEWSLETTER ============ -->
+  <section class="nl-sec" id="newsletter">
+    <div class="container" id="nlWrap" aria-live="polite">
+      <span class="eyebrow">The roast list</span>
+      <h2>Hungry for something <em>new?</em></h2>
+      <p class="nl-sub">Join 12,000+ coffee lovers — roast alerts, invite-only cuppings, and 10% off your first bag.</p>
+      <form class="nl-form" id="nlForm" novalidate>
+        <input type="email" id="nlEmail" placeholder="your@email.com" aria-label="Email address" autocomplete="email">
+        <button type="submit">Get 10% off</button>
+      </form>
+      <div class="nl-err" id="nlErr"></div>
+      <p class="nl-note">No spam, ever. Unsubscribe anytime.</p>
+    </div>
+  </section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="logo" href="#top"><svg aria-hidden="true"><use href="#i-bean"/></svg>Emberline</a>
+        <p>Small-batch coffee roasters sourcing directly from 23 single origins. Roasted with patience in Brooklyn, NY — shipped fresh within 48 hours.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg aria-hidden="true"><use href="#i-instagram"/></svg></a>
+          <a href="#" aria-label="X"><svg aria-hidden="true"><use href="#i-x"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg aria-hidden="true"><use href="#i-youtube"/></svg></a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h4>Shop</h4>
+        <a href="#collection">All coffee</a>
+        <a href="#collection">Single origins</a>
+        <a href="#collection">Gift sets</a>
+        <a href="#brew">Brew gear</a>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <a href="#story">Our story</a>
+        <a href="#roast">Roast explorer</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#newsletter">Journal</a>
+      </div>
+      <div class="foot-col">
+        <h4>Support</h4>
+        <a href="#">Shipping</a>
+        <a href="#">Returns</a>
+        <a href="#">FAQ</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="foot-mark" aria-hidden="true">Emberline</div>
+    <div class="foot-bar">
+      <span>© 2025 Emberline Coffee Roasters · Brooklyn, NY</span>
+      <span><a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a> &nbsp;·&nbsp; Roast No. 1842</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ CART ============ -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart">
+  <div class="drawer-head">
+    <h3>Your cart <span id="drawerCount"></span></h3>
+    <button class="panel-close" id="closeDrawer" aria-label="Close cart"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="drawer-body" id="cartItems"></div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="sub-row"><span>Subtotal</span><b id="cartSubtotal">$0</b></div>
+    <p class="ship-note">Shipping &amp; taxes calculated at checkout · Free over $50</p>
+    <button class="btn btn-primary btn-block" id="checkoutBtn">Checkout</button>
+    <button class="link-btn" id="continueBtn">or continue browsing</button>
+  </div>
+</aside>
+
+<!-- ============ MISC ============ -->
+<button id="backTop" aria-label="Back to top"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg></button>
+<div class="toast" id="toast" role="status"><span class="t-ic"><svg aria-hidden="true"><use href="#i-check"/></svg></span><span id="toastMsg"></span></div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,e){return (e||document).querySelector(s)};
+var $$=function(s,e){return Array.prototype.slice.call((e||document).querySelectorAll(s))};
+
+/* ---------- Header + back to top ---------- */
+var header=$('#siteHeader'),backTop=$('#backTop');
+function onScroll(){
+  header.classList.toggle('scrolled',window.scrollY>16);
+  backTop.classList.toggle('show',window.scrollY>600);
+}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+backTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+
+/* ---------- Shared panel state ---------- */
+var menu=$('#mobileMenu'),burger=$('#burger'),overlay=$('#overlay'),drawer=$('#drawer');
+function lock(v){document.body.classList.toggle('locked',!!v)}
+function openMenu(){menu.classList.add('open');burger.setAttribute('aria-expanded','true');lock(true)}
+function closeMenu(){menu.classList.remove('open');burger.setAttribute('aria-expanded','false');lock(drawer.classList.contains('open'))}
+burger.addEventListener('click',function(){menu.classList.contains('open')?closeMenu():openMenu()});
+$('#closeMenu').addEventListener('click',closeMenu);
+$$('#mobileMenu a').forEach(function(a){a.addEventListener('click',closeMenu)});
+
+/* ---------- Cart ---------- */
+var PRODUCTS={
+  midnight:{name:'Midnight Ember',desc:'Ethiopia · Yirgacheffe · 1,950m',price:24,color:'#3A2415'},
+  golden:{name:'Golden Hour',desc:'Colombia · Huila · 1,700m',price:22,color:'#C4743B'},
+  fog:{name:'Morning Fog',desc:'Kenya · Nyeri · 1,850m',price:23,color:'#8A5A33'}
+};
+var cart={};
+var emptyHTML='<div class="cart-empty"><svg aria-hidden="true"><use href="#i-bean"/></svg>'+
+  '<p><b>Your cart is empty</b></p>'+
+  '<p style="font-size:.85rem;margin:.4rem 0 1.2rem">Roasts you add will show up here.</p>'+
+  '<button class="btn btn-primary" data-browse>Browse the collection</button></div>';
+
+function fmt$(n){return '$'+n.toLocaleString()}
+function renderCart(){
+  var entries=Object.keys(cart).map(function(k){return [k,cart[k]]});
+  var count=entries.reduce(function(s,e){return s+e[1]},0);
+  var badge=$('#cartCount');
+  badge.textContent=count;badge.style.display=count?'grid':'none';
+  $('#drawerCount').textContent=count?'('+count+')':'';
+  var foot=$('#cartFoot'),box=$('#cartItems');
+  if(!entries.length){foot.style.display='none';box.innerHTML=emptyHTML;return}
+  foot.style.display='';
+  var total=0;
+  box.innerHTML=entries.map(function(e){
+    var id=e[0],q=e[1],p=PRODUCTS[id];total+=p.price*q;
+    return '<div class="ci">'+
+      '<div class="ci-thumb" style="--c:'+p.color+'"><svg aria-hidden="true"><use href="#i-bean"/></svg></div>'+
+      '<div class="ci-info"><b>'+p.name+'</b><span>'+p.desc+'</span>'+
+        '<div class="qty"><button data-qty="-1" data-id="'+id+'" aria-label="Decrease quantity">&minus;</button><i>'+q+'</i><button data-qty="1" data-id="'+id+'" aria-label="Increase quantity">+</button></div>'+
+      '</div>'+
+      '<div class="ci-right"><span class="ci-price">'+fmt$(p.price*q)+'</span><button class="ci-remove" data-remove="'+id+'">Remove</button></div>'+
+    '</div>';
+  }).join('');
+  $('#cartSubtotal').textContent=fmt$(total);
+}
+function openCart(){renderCart();drawer.classList.add('open');overlay.classList.add('open');lock(true);$('#closeDrawer').focus()}
+function closeCart(){drawer.classList.remove('open');overlay.classList.remove('open');lock(menu.classList.contains('open'))}
+$('#cartBtn').addEventListener('click',openCart);
+$('#closeDrawer').addEventListener('click',closeCart);
+$('#continueBtn').addEventListener('click',closeCart);
+overlay.addEventListener('click',closeCart);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeCart();closeMenu()}});
+
+var toastT;
+function toast(msg){
+  $('#toastMsg').textContent=msg;
+  var t=$('#toast');t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show')},2400);
+}
+function pulseBtn(btn){
+  if(btn.classList.contains('added'))return;
+  var old=btn.innerHTML;
+  btn.classList.add('added');
+  btn.innerHTML='<svg class="ic" aria-hidden="true"><use href="#i-check"/></svg> Added';
+  setTimeout(function(){btn.classList.remove('added');btn.innerHTML=old},1100);
+}
+document.addEventListener('click',function(e){
+  var add=e.target.closest('[data-add]');
+  if(add){
+    var id=add.dataset.add;
+    cart[id]=(cart[id]||0)+1;renderCart();pulseBtn(add);
+    var b=$('#cartCount');b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop');
+    toast(PRODUCTS[id].name+' added to cart');return;
+  }
+  var q=e.target.closest('[data-qty]');
+  if(q){
+    var id2=q.dataset.id,n=(cart[id2]||0)+parseInt(q.dataset.qty,10);
+    if(n<=0)delete cart[id2];else cart[id2]=n;
+    renderCart();return;
+  }
+  var rm=e.target.closest('[data-remove]');
+  if(rm){delete cart[rm.dataset.remove];renderCart();return}
+  var br=e.target.closest('[data-browse]');
+  if(br){closeCart();$('#collection').scrollIntoView({behavior:'smooth'})}
+});
+$('#checkoutBtn').addEventListener('click',function(){
+  if(!Object.keys(cart).length)return;
+  var b=$('#checkoutBtn');
+  b.disabled=true;b.textContent='Processing…';
+  setTimeout(function(){
+    b.innerHTML='<svg class="ic" aria-hidden="true"><use href="#i-check"/></svg> Order placed';
+    setTimeout(function(){
+      cart={};renderCart();
+      b.disabled=false;b.textContent='Checkout';
+      toast('Order confirmed — ships on roast day.');
+    },900);
+  },900);
+});
+
+/* ---------- Collection filter ---------- */
+$$('.f-pill').forEach(function(pill){
+  pill.addEventListener('click',function(){
+    $$('.f-pill').forEach(function(p){p.classList.remove('active')});
+    pill.classList.add('active');
+    var f=pill.dataset.filter;
+    $$('#collGrid .card').forEach(function(card){
+      var match=f==='all'||card.dataset.tag===f;
+      card.classList.toggle('hide',!match);
+      if(match){card.style.animation='none';void card.offsetWidth;card.style.animation='';}
+    });
+  });
+});
+
+/* ---------- Count-up stats ---------- */
+function animateCount(el){
+  var target=parseFloat(el.dataset.count),dec=parseInt(el.dataset.decimals||'0',10),
+      suf=el.dataset.suffix||'',dur=1600,t0=performance.now();
+  function tick(t){
+    var p=Math.min((t-t0)/dur,1),e=1-Math.pow(1-p,3),v=target*e;
+    el.textContent=(dec?v.toFixed(dec):Math.round(v).toLocaleString())+suf;
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+var cio=new IntersectionObserver(function(es){
+  es.forEach(function(en){if(en.isIntersecting){animateCount(en.target);cio.unobserve(en.target)}});
+},{threshold:.5});
+$$('.count').forEach(function(el){cio.observe(el)});
+
+/* ---------- Reveal on scroll ---------- */
+var rio=new IntersectionObserver(function(es){
+  es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');rio.unobserve(en.target)}});
+},{threshold:.12});
+$$('.reveal').forEach(function(el){rio.observe(el)});
+
+/* ---------- Hero parallax ---------- */
+var hv=$('#heroVisual');
+if(window.matchMedia('(pointer:fine)').matches&&hv){
+  hv.addEventListener('mousemove',function(e){
+    var r=hv.getBoundingClientRect(),
+        x=(e.clientX-r.left)/r.width-.5,
+        y=(e.clientY-r.top)/r.height-.5;
+    $$('[data-depth]',hv).forEach(function(el){
+      var d=parseFloat(el.dataset.depth);
+      el.style.translate=(x*d)+'px '+(y*d)+'px';
+    });
+  });
+  hv.addEventListener('mouseleave',function(){
+    $$('[data-depth]',hv).forEach(function(el){el.style.translate=''});
+  });
+}
+
+/* ---------- Roast explorer ---------- */
+var roast=$('#roastRange'),beanBody=$('#beanBody'),crease=$('#beanCrease'),cracks=$('#cracks'),
+    stageEl=$('#roastStage'),tempEl=$('#roastTemp'),devEl=$('#roastDev'),notesEl=$('#roastNotes'),
+    labL=$('#labL'),labM=$('#labM'),labD=$('#labD');
+var C1=[201,139,78],C2=[34,17,8];
+function mix(a,b,t){return 'rgb('+a.map(function(v,i){return Math.round(v+(b[i]-v)*t)}).join(',')+')'}
+function setBar(name,v){
+  $('#bar-'+name).style.width=Math.round(v)+'%';
+  $('#val-'+name).textContent=Math.round(v)+'%';
+}
+function updateRoast(){
+  var p=+roast.value,t=p/100;
+  beanBody.style.fill=mix(C1,C2,t);
+  crease.style.stroke=mix([140,90,50],[12,7,4],t);
+  cracks.style.opacity=(t*0.85).toFixed(2);
+  tempEl.textContent=Math.round(196+16*t)+'°C';
+  devEl.textContent=Math.round(9+14*t)+' min';
+  var stage,notes;
+  if(p<34){stage='Light Roast';notes=['Bergamot','Jasmine','Stone fruit']}
+  else if(p<67){stage='Medium Roast';notes=['Caramel','Red berries','Honey']}
+  else{stage='Dark Roast';notes=['Dark chocolate','Smoke','Molasses']}
+  stageEl.textContent=stage;
+  labL.classList.toggle('on',p<34);labM.classList.toggle('on',p>=34&&p<67);labD.classList.toggle('on',p>=67);
+  if(notesEl.dataset.v!==stage){
+    notesEl.dataset.v=stage;notesEl.classList.add('fade');
+    setTimeout(function(){
+      notesEl.innerHTML=notes.map(function(n){return '<li>'+n+'</li>'}).join('');
+      notesEl.classList.remove('fade');
+    },160);
+  }
+  setBar('acid',95-75*t);
+  setBar('body',24+71*t);
+  setBar('sweet',Math.max(30,92-Math.abs(t-.55)*95));
+}
+roast.addEventListener('input',updateRoast);
+updateRoast();
+
+/* ---------- Brew calculator ---------- */
+var M={
+  pour:{label:'Pour Over',dose:20,doseR:[10,40],ratio:16,ratioR:[10,22],rStep:.5,temp:94,tempR:[85,100],ideal:[90,96],maxStr:3,tip:'Bloom with 50g of water for 30 seconds before the main pour.'},
+  espresso:{label:'Espresso',dose:18,doseR:[14,28],ratio:2,ratioR:[1.5,4],rStep:.1,temp:93,tempR:[88,96],ideal:[92,94],maxStr:5,tip:'Nine bars of pressure — aim for a 25–30 second shot.'},
+  press:{label:'French Press',dose:30,doseR:[20,50],ratio:16,ratioR:[12,20],rStep:.5,temp:96,tempR:[85,100],ideal:[93,96],maxStr:3,tip:'Steep 4 minutes, then press slowly — never squeeze the grounds.'},
+  cold:{label:'Cold Brew',dose:60,doseR:[40,120],ratio:8,ratioR:[6,12],rStep:.5,temp:18,tempR:[4,30],ideal:[4,20],maxStr:2,tip:'Steep 12–18 hours in the fridge, then dilute to taste.'}
+};
+var cur='pour',
+    doseEl=$('#dose'),ratioEl=$('#ratio'),tempEl=$('#temp'),
+    doseVal=$('#doseVal'),ratioVal=$('#ratioVal'),tempVal=$('#tempVal'),
+    outWater=$('#outWater'),outTime=$('#outTime'),outDose=$('#outDose'),outTemp=$('#outTemp'),
+    tipBox=$('#brewTip'),tipText=$('#tipText');
+function paint(el){
+  var p=(el.value-el.min)/(el.max-el.min)*100;
+  el.style.setProperty('--fill',p+'%');
+}
+function calc(){
+  var m=M[cur],
+      d=+doseEl.value,r=+ratioEl.value,t=+tempEl.value,
+      water=Math.round(d*r);
+  doseVal.textContent=d+' g';
+  ratioVal.textContent='1 : '+(r%1?r.toFixed(1):r);
+  tempVal.textContent=t+' °C';
+  outWater.textContent=water+' ml';
+  outDose.textContent=d+' g';
+  outTemp.textContent=t+'°C';
+  if(cur==='espresso'){outTime.textContent='~'+Math.round(20+d*0.55)+' sec'}
+  else if(cur==='cold'){outTime.textContent='~14 hr'}
+  else if(cur==='press'){outTime.textContent='~4 min'}
+  else{var s=Math.round(water*0.62);outTime.textContent='~'+Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+  var st=r<=2.5?5:r<=5?4:r<=10?3:r<=16?3:r<=20?2:1;
+  st=Math.min(st,m.maxStr);
+  $$('#strBars i').forEach(function(el,i){el.classList.toggle('on',i<st)});
+  if(t<m.ideal[0]){
+    tipBox.classList.add('warn');
+    tipText.textContent='Cooler than ideal for '+m.label+' ('+m.ideal[0]+'–'+m.ideal[1]+'°C) — expect a sweeter, sharper cup.';
+  }else if(t>m.ideal[1]){
+    tipBox.classList.add('warn');
+    tipText.textContent='Hotter than ideal for '+m.label+' — bitterness and harshness will climb. Dial back.';
+  }else{
+    tipBox.classList.remove('warn');
+    tipText.textContent=m.tip;
+  }
+  [doseEl,ratioEl,tempEl].forEach(paint);
+}
+function setRange(el,range,val,step){
+  el.min=range[0];el.max=range[1];el.step=step;el.value=val;
+}
+function setMethod(k){
+  cur=k;var m=M[k];
+  $$('.m-btn').forEach(function(b){b.classList.toggle('active',b.dataset.method===k)});
+  setRange(doseEl,m.doseR,m.dose,1);
+  setRange(ratioEl,m.ratioR,m.ratio,m.rStep);
+  setRange(tempEl,m.tempR,m.temp,1);
+  calc();
+}
+$$('.m-btn').forEach(function(b){b.addEventListener('click',function(){setMethod(b.dataset.method)})});
+[doseEl,ratioEl,tempEl].forEach(function(el){el.addEventListener('input',calc)});
+calc();
+
+/* ---------- Testimonials carousel ---------- */
+var track=$('#tTrack'),slides=$$('.t-slide',track),dotsBox=$('#tDots'),ti=0,timer;
+slides.forEach(function(_,i){
+  var b=document.createElement('button');
+  b.className='dot';b.setAttribute('aria-label','Go to review '+(i+1));
+  b.addEventListener('click',function(){go(i,true)});
+  dotsBox.appendChild(b);
+});
+function go(i,user){
+  ti=(i+slides.length)%slides.length;
+  track.style.transform='translateX(-'+(ti*100)+'%)';
+  $$('.dot',dotsBox).forEach(function(d,k){d.classList.toggle('active',k===ti)});
+  if(user)restart();
+}
+function restart(){clearInterval(timer);timer=setInterval(function(){go(ti+1)},6000)}
+$('#tPrev').addEventListener('click',function(){go(ti-1,true)});
+$('#tNext').addEventListener('click',function(){go(ti+1,true)});
+var vp=$('.t-viewport');
+vp.addEventListener('mouseenter',function(){clearInterval(timer)});
+vp.addEventListener('mouseleave',restart);
+go(0);restart();
+
+/* ---------- Newsletter ---------- */
+var nlForm=$('#nlForm');
+nlForm.addEventListener('submit',function(e){
+  e.preventDefault();
+  var email=$('#nlEmail').value.trim(),err=$('#nlErr');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    err.textContent='Please enter a valid email address.';
+    nlForm.classList.remove('shake');void nlForm.offsetWidth;nlForm.classList.add('shake');
+    $('#nlEmail').focus();return;
+  }
+  $('#nlWrap').innerHTML='<div class="nl-success">'+
+    '<span class="nl-check"><svg aria-hidden="true"><use href="#i-check"/></svg></span>'+
+    '<h3>You\'re on the list.</h3>'+
+    '<p>Watch your inbox for roast updates — plus a 10% code for your first bag.</p>'+
+  '</div>';
+  toast('Welcome to The Roast List.');
+});
+
+renderCart();
+})();
+</script>
+</body>
+</html>
